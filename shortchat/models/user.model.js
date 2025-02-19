@@ -1,5 +1,5 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../db.js";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db.js");
 
 const User = sequelize.define("User", {
   phone: {
@@ -36,7 +36,13 @@ const User = sequelize.define("User", {
   },
 });
 
-await sequelize.sync(); // Sync models with database
-console.log("✅ User model synced with the database.");
+sequelize
+  .sync()
+  .then(() => {
+    console.log("✅ User model synced with the database.");
+  })
+  .catch((err) => {
+    console.error("❌ Error syncing User model:", err);
+  });
 
-export default User;
+module.exports = User;

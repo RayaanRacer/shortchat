@@ -1,12 +1,12 @@
-import Admin from "../models/admin.model.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import asyncHandler from "express-async-handler";
+const Admin = require("../models/admin.model.js");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
 
 const SECRET_KEY = process.env.SECRET_KEY; // Change this to a secure key
 
 // Admin Login Controller
-export const adminLogin = asyncHandler(async (req, res) => {
+exports.adminLogin = asyncHandler(async (req, res) => {
   try {
     const { password } = req.body;
 
@@ -34,7 +34,7 @@ export const adminLogin = asyncHandler(async (req, res) => {
 });
 
 // Admin Registration (Only for first-time setup)
-export const registerAdmin = asyncHandler(async (req, res) => {
+exports.registerAdmin = asyncHandler(async (req, res) => {
   try {
     const { password } = req.body;
 

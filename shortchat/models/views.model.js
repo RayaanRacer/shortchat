@@ -1,5 +1,5 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../db.js";
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db.js");
 
 const Views = sequelize.define("Views", {
   date: {
@@ -36,7 +36,13 @@ const Views = sequelize.define("Views", {
   },
 });
 
-await sequelize.sync(); // Sync models with database
-console.log("✅ Views model synced with the database.");
+sequelize
+  .sync()
+  .then(() => {
+    console.log("✅ Views model synced with the database.");
+  })
+  .catch((err) => {
+    console.error("❌ Error syncing Views model:", err);
+  });
 
-export default Views;
+module.exports = Views;

@@ -1,11 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db.js";
 
-const User = sequelize.define("User", {
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+const FormUsage = sequelize.define("FormUsage", {
   date: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -14,29 +10,25 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  modelName: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  modelNumber: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  deviceId: {
+  ipAddress: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   cdate: {
-    type: DataTypes.DATE,
+    type: DataTypes.STRING,
     allowNull: true,
   },
-  referralCode: {
+  whatsappNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  message: {
     type: DataTypes.STRING,
     allowNull: true,
   },
 });
 
 await sequelize.sync(); // Sync models with database
-console.log("✅ User model synced with the database.");
+console.log("✅ FormUsage model synced with the database.");
 
-export default User;
+export default FormUsage;
