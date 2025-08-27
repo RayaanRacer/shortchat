@@ -7,6 +7,8 @@ import SecondStepLogs from "./components/SecondStepLogs";
 import AttemptLogs from "./components/AttemptLogs";
 import Sidebar from "./components/Sidebar";
 import ThirdStepLogs from "./components/ThirdStepLogs";
+import AllUsers from "./components/AllUsers";
+import AllTransactions from "./components/AllTransactions";
 
 function App() {
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -24,28 +26,98 @@ function App() {
     <>
       <BrowserRouter>
         <React.Fragment ref={containerRef}>
-          <Sidebar widthUpd={setSidebarWidth} />
           <Routes>
-            <Route path="/admin/login" element={<Login />} />
+            <Route
+              path="/admin/login"
+              element={
+                <>
+                  {" "}
+                  <Login />
+                </>
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <AttemptLogs width={tableWidth} />
+                    </>
+                  }
+                />
+              }
+            />
 
             <Route
               path="/admin/all-attempts"
               element={
-                <PrivateRoute element={<AttemptLogs width={tableWidth} />} />
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <AttemptLogs width={tableWidth} />
+                    </>
+                  }
+                />
               }
             />
 
             <Route
               path="/admin/second-step-logs"
               element={
-                <PrivateRoute element={<SecondStepLogs width={tableWidth} />} />
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <SecondStepLogs width={tableWidth} />
+                    </>
+                  }
+                />
               }
             />
 
             <Route
               path="/admin/third-step-logs"
               element={
-                <PrivateRoute element={<ThirdStepLogs width={tableWidth} />} />
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <ThirdStepLogs width={tableWidth} />
+                    </>
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/admin/all-users"
+              element={
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <AllUsers width={tableWidth} />
+                    </>
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/admin/all-transactions"
+              element={
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <AllTransactions width={tableWidth} />
+                    </>
+                  }
+                />
               }
             />
           </Routes>

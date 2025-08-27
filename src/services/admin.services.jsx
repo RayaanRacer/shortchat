@@ -85,6 +85,27 @@ export const fetchSecondStepLogs = async (filters) => {
   return response.data;
 };
 
+export const fetchReAttemptsStepLogs = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_reattempts.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        anyTime: filters?.anyTime ?? "",
+        fromDate: filters?.fromDate ?? "",
+        toDate: filters?.toDate ?? "",
+        fromDateOne: filters?.fromDateOne ?? "",
+        toDateOne: filters?.toDateOne ?? "",
+      },
+    }
+  );
+  return response.data;
+};
+
 export const fetchThirdStepLogs = async (filters) => {
   const token = Cookies.get("admin-token");
   const response = await axios.get(
@@ -100,6 +121,197 @@ export const fetchThirdStepLogs = async (filters) => {
         toDate: filters?.toDate ?? "",
         fromDateOne: filters?.fromDateOne ?? "",
         toDateOne: filters?.toDateOne ?? "",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const deleteOtpLogsService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/delete_second_step.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        phoneCode: filters?.phoneCode ?? "",
+        phoneNumber: filters?.phoneNumber ?? "",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const UsersListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_login_accounts.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+// Transaction apis
+export const AllTransactionListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_all_transactions.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: filters,
+    }
+  );
+  return response.data;
+};
+
+export const AllSuccessListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_success_transactions.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const AllUnderProcessTxnsListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_under_process_transaction.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const AllUnderProcessTxnsInactivatedListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_under_process_transaction_inactivated.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const AllRefundTxnsListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_refund_transaction.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const AllRefundedTxnsListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/get_refunded_transaction.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const AllCallUserListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/call_user.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const DeleteTransactionService = async (id) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    `https://shortchat.app/apis/dashboard/admin/delete_order.php?id=${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const RefundTransactionService = async (data) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.post(
+    `https://shortchat.app/apis/dashboard/admin/refund_transaction.php`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const ApproveRefundTransactionService = async (data) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.post(
+    `https://shortchat.app/apis/dashboard/admin/approve_refund_txn.php`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const DeclineRefundTransactionService = async (data) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.post(
+    `https://shortchat.app/apis/dashboard/admin/decline_refund_transaction.php`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   );

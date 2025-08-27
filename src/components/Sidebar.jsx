@@ -9,13 +9,18 @@ import { FaEye, FaSignOutAlt } from "react-icons/fa";
 import { SiPronounsdotpage } from "react-icons/si";
 import { PiNumberSquareThreeBold, PiNumberSquareTwoBold } from "react-icons/pi";
 import AuthAdmin from "../services/admin.services";
+import { MdOutlinePayments } from "react-icons/md";
 
 const Sidebar = ({ widthUpd }) => {
   const { logout } = AuthAdmin();
   const location = useLocation();
   const divRef = useRef(null);
   const [current, setCurrent] = useState(
-    location.pathname == "/admin/all-attempts" ? "attempts" : "second"
+    location.pathname == "/admin/all-attempts"
+      ? "attempts"
+      : location.pathname == "/admin/all-users"
+      ? "users"
+      : ""
   );
 
   const navigate = useNavigate();
@@ -56,7 +61,13 @@ const Sidebar = ({ widthUpd }) => {
             </a>
           </li>
 
-          <li className="">
+          <li
+            className={current == "users" ? "hovered" : ""}
+            onClick={() => {
+              setCurrent("users");
+              navigate("/admin/all-users");
+            }}
+          >
             <a href="#" className="d-flex align-items-center flex-row ps-3">
               <FiUsers size={24} className="me-2 icon-color" />
               <span className="title">All Users</span>
@@ -80,6 +91,18 @@ const Sidebar = ({ widthUpd }) => {
             <a href="#" className="d-flex align-items-center flex-row ps-3">
               <SiPronounsdotpage size={24} className="me-2 icon-color" />
               <span className="title">All Attempts</span>
+            </a>
+          </li>
+          <li
+            className={current == "transactions" ? "hovered" : ""}
+            onClick={() => {
+              setCurrent("transactions");
+              navigate("/admin/all-transactions");
+            }}
+          >
+            <a href="#" className="d-flex align-items-center flex-row ps-3">
+              <MdOutlinePayments size={24} className="me-2 icon-color" />
+              <span className="title">All Transactions</span>
             </a>
           </li>
           <li className="" onClick={logout}>

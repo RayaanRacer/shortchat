@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { fetchAttemptLLogs, fetchUsers } from "../services/admin.services";
+import {
+  deleteOtpLogsService,
+  fetchReAttemptsStepLogs,
+} from "../services/admin.services";
 import axios from "axios";
 import { FaArrowAltCircleDown } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { TbTrash } from "react-icons/tb";
 // import axios from "axios";
 
-const AllAttemptLogs = ({ width }) => {
+const SecondStepLogs = ({ width }) => {
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState(null);
   const [page, setPage] = useState(1);
@@ -13,10 +18,10 @@ const AllAttemptLogs = ({ width }) => {
   const [error, setError] = useState(null);
   const [expandedRows, setExpandedRows] = useState({});
 
-  const toggleRow = (index) => {
+  const toggleRow = (p_index, index) => {
     setExpandedRows((prev) => ({
       ...prev,
-      [index]: !prev[index],
+      [`${p_index}${index}`]: !prev[`${p_index}${index}`],
     }));
   };
   const [loaders, setLoaders] = useState({
@@ -34,27 +39,27 @@ const AllAttemptLogs = ({ width }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchAttemptLLogs()
+    fetchReAttemptsStepLogs()
       .then((res) => {
-        let temp_logs = [];
-        let temp_grouped_data = res?.data?.groupedOTPLogs;
-        temp_grouped_data?.map((elem) => {
-          const groupedByDate = elem.children.reduce((acc, child) => {
-            const dateOnly = child.date.split(" ")[0];
-            if (!acc[dateOnly]) acc[dateOnly] = [];
-            acc[dateOnly].push(child);
-            return acc;
-          }, {});
+        const groupedByParentDate = res?.data?.groupedOTPLogs.reduce(
+          (acc, parent) => {
+            const dateOnly = parent.createdAt.split(" ")[0]; // Extract just the date
 
-          const groupedArray = Object.entries(groupedByDate).map(
-            ([date, items]) => ({
-              date,
-              children: items,
-            })
-          );
-          temp_logs.push({ ...elem, children: groupedArray });
-        });
-        console.log(temp_logs);
+            // Find or create the group
+            let group = acc.find((g) => g.date === dateOnly);
+            if (!group) {
+              group = { date: dateOnly, logs: [] };
+              acc.push(group);
+            }
+
+            group.logs.push(parent);
+            return acc;
+          },
+          []
+        );
+
+        res.data.groupedOTPLogs = groupedByParentDate;
+        console.log(res?.data);
 
         setLogs(res?.data);
       })
@@ -66,31 +71,6 @@ const AllAttemptLogs = ({ width }) => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     console.log("reached");
-
-  //     try {
-  //       const response = await axios.get(
-  //         "http://shortchat.app/apis/user_list.php"
-  //       );
-  //       if (response.data.status === "success") {
-  //         setUsers(response.data.users);
-  //       } else {
-  //         setError("No users found");
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-
-  //       setError("Error fetching users");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchUsers();
-  // }, []);
-
   const onHandleAnyTime = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -101,8 +81,26 @@ const AllAttemptLogs = ({ width }) => {
     };
     setFilters({ ...tempFilter });
     setLoading({ ...loaders, anyTime: true });
-    fetchAttemptLLogs(tempFilter)
+    fetchReAttemptsStepLogs(tempFilter)
       .then((res) => {
+        const groupedByParentDate = res?.data?.groupedOTPLogs.reduce(
+          (acc, parent) => {
+            const dateOnly = parent.createdAt.split(" ")[0]; // Extract just the date
+
+            // Find or create the group
+            let group = acc.find((g) => g.date === dateOnly);
+            if (!group) {
+              group = { date: dateOnly, logs: [] };
+              acc.push(group);
+            }
+
+            group.logs.push(parent);
+            return acc;
+          },
+          []
+        );
+
+        res.data.groupedOTPLogs = groupedByParentDate;
         setLogs(res?.data);
       })
       .catch((err) => {
@@ -124,8 +122,26 @@ const AllAttemptLogs = ({ width }) => {
     };
     setFilters({ ...tempFilter });
     setLoading({ ...loaders, intervalOne: true });
-    fetchAttemptLLogs(tempFilter)
+    fetchReAttemptsStepLogs(tempFilter)
       .then((res) => {
+        const groupedByParentDate = res?.data?.groupedOTPLogs.reduce(
+          (acc, parent) => {
+            const dateOnly = parent.createdAt.split(" ")[0]; // Extract just the date
+
+            // Find or create the group
+            let group = acc.find((g) => g.date === dateOnly);
+            if (!group) {
+              group = { date: dateOnly, logs: [] };
+              acc.push(group);
+            }
+
+            group.logs.push(parent);
+            return acc;
+          },
+          []
+        );
+
+        res.data.groupedOTPLogs = groupedByParentDate;
         setLogs(res?.data);
       })
       .catch((err) => {
@@ -147,8 +163,26 @@ const AllAttemptLogs = ({ width }) => {
     };
     setFilters({ ...tempFilter });
     setLoading({ ...loaders, intervalTwo: true });
-    fetchAttemptLLogs(tempFilter)
+    fetchReAttemptsStepLogs(tempFilter)
       .then((res) => {
+        const groupedByParentDate = res?.data?.groupedOTPLogs.reduce(
+          (acc, parent) => {
+            const dateOnly = parent.createdAt.split(" ")[0]; // Extract just the date
+
+            // Find or create the group
+            let group = acc.find((g) => g.date === dateOnly);
+            if (!group) {
+              group = { date: dateOnly, logs: [] };
+              acc.push(group);
+            }
+
+            group.logs.push(parent);
+            return acc;
+          },
+          []
+        );
+
+        res.data.groupedOTPLogs = groupedByParentDate;
         setLogs(res?.data);
       })
       .catch((err) => {
@@ -156,6 +190,27 @@ const AllAttemptLogs = ({ width }) => {
       })
       .finally(() => {
         setLoading({ ...loaders, intervalTwo: false });
+      });
+  };
+
+  const onDeleteAttemptLogs = (phoneCode, phoneNumber) => {
+    deleteOtpLogsService({ phoneCode, phoneNumber })
+      .then((res) => {
+        toast.success(res?.message);
+        setLoading({ ...loaders, intervalTwo: true });
+        fetchReAttemptsStepLogs(filters)
+          .then((res) => {
+            setLogs(res?.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setLoading({ ...loaders, intervalTwo: false });
+          });
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message);
       });
   };
 
@@ -845,66 +900,121 @@ const AllAttemptLogs = ({ width }) => {
                   <th className="text-center">Phone Number</th>
                   <th className="text-center">Attempts</th>
                   <th className="text-center">More</th>
+                  <th className="text-center">Del</th>
                 </tr>
               </thead>
               <tbody>
-                {logs?.groupedOTPLogs?.map((user, index) => (
-                  <React.Fragment key={user.id}>
-                    {/* Parent Row */}
-                    <tr>
-                      <th className="text-center">{index + 1}</th>
-                      <td className="text-center">
-                        {user.createdAt?.split(" ")[0]}
-                      </td>
-                      <td className="text-center">
-                        {user.createdAt?.split(" ")[1]}
-                      </td>
-                      <td className="text-center">{user.phoneCode}</td>
-                      <td className="text-center">{user.phoneNumber}</td>
-                      <td className="text-center">{user.children?.length}</td>
-                      <td className="text-center">
-                        <FaArrowAltCircleDown
-                          className="clickable-btn"
-                          onClick={() => toggleRow(index)}
-                          style={{
-                            cursor: "pointer",
-                            transform: expandedRows[index]
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                            transition: "transform 0.3s ease",
-                          }}
-                        />
-                      </td>
-                    </tr>
-
-                    {/* Child Rows */}
-                    {expandedRows[index] &&
-                      user.children?.map((child, i) => (
-                        <tr
-                          key={i}
-                          className={`child-row ${
-                            expandedRows[index] ? "show" : "hide"
-                          }`}
-                          style={{
-                            transition: "all 0.3s ease",
-                            backgroundColor: "#f8f9fa",
-                          }}
+                {logs?.groupedOTPLogs?.map((users, p_index) => {
+                  const [year, month, day] = users?.date.split("-");
+                  const formattedDate = `${day}-${month}-${year}`;
+                  return (
+                    <React.Fragment key={users.id}>
+                      {/* Parent Row */}
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="text-center text-light bg-secondary"
                         >
-                          <td className="text-center"></td>
-                          <td className="text-center">
-                            {child.date?.split(" ")[0]}
-                          </td>
-                          <td className="text-center">
-                            {child.date?.split(" ")[1]?.substr(0, 8)}
-                          </td>
-                          <td className="text-center">{child.phoneCode}</td>
-                          <td className="text-center">{child.phoneNumber}</td>
-                          <td className="text-center">---</td>
-                          <td className="text-center"></td>
-                        </tr>
-                      ))}
-                  </React.Fragment>
-                ))}
+                          {/* {users?.date} */}
+                          {formattedDate}
+                        </td>
+                      </tr>
+                      {users?.logs?.map((user, index) => {
+                        const [year, month, day] = user.createdAt
+                          ?.split(" ")[0]
+                          .split("-");
+                        const formattedDate = `${day}-${month}-${year}`;
+                        return (
+                          <>
+                            <tr>
+                              <th className="text-center">{index + 1}</th>
+                              <td className="text-center">{formattedDate}</td>
+                              <td className="text-center">
+                                {user.createdAt?.split(" ")[1]}
+                              </td>
+                              <td className="text-center">{user.phoneCode}</td>
+                              <td className="text-center">
+                                {user.phoneNumber}
+                              </td>
+                              <td className="text-center">
+                                {user.children?.length}
+                              </td>
+                              <td className="text-center">
+                                <FaArrowAltCircleDown
+                                  className="clickable-btn"
+                                  onClick={() => {
+                                    toggleRow(p_index, index);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    transform: expandedRows[
+                                      `${p_index}${index}`
+                                    ]
+                                      ? "rotate(180deg)"
+                                      : "rotate(0deg)",
+                                    transition: "transform 0.3s ease",
+                                  }}
+                                />
+                              </td>
+                              <td className="text-center">
+                                <TbTrash
+                                  className="clickable-btn"
+                                  onClick={() =>
+                                    onDeleteAttemptLogs(
+                                      user.phoneCode,
+                                      user.phoneNumber
+                                    )
+                                  }
+                                />
+                              </td>
+                            </tr>
+                            {/* Child Rows */}
+                            {expandedRows[`${p_index}${index}`] &&
+                              user.children?.slice(1).map((child, i) => {
+                                const [year, month, day] = child.date
+                                  ?.split(" ")[0]
+                                  .split("-");
+                                const formattedDate = `${day}-${month}-${year}`;
+                                return (
+                                  <tr
+                                    key={i}
+                                    className={`child-row ${
+                                      expandedRows[`${p_index}${index}`]
+                                        ? "show"
+                                        : "hide"
+                                    }`}
+                                    style={{
+                                      transition: "all 0.3s ease",
+                                      backgroundColor: "#f8f9fa",
+                                    }}
+                                  >
+                                    <td className="text-center">
+                                      <b> {i + 2} </b>
+                                    </td>
+                                    <td className="text-center">
+                                      {formattedDate}
+                                    </td>
+                                    <td className="text-center">
+                                      {child.date?.split(" ")[1]?.substr(0, 8)}
+                                    </td>
+                                    <td className="text-center">
+                                      {child.phoneCode}
+                                    </td>
+                                    <td className="text-center">
+                                      {child.phoneNumber}
+                                    </td>
+                                    <td className="text-center">---</td>
+                                    <td className="text-center"></td>
+                                    <td className="text-center">---</td>
+                                  </tr>
+                                );
+                              })}{" "}
+                          </>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -914,4 +1024,4 @@ const AllAttemptLogs = ({ width }) => {
   );
 };
 
-export default AllAttemptLogs;
+export default SecondStepLogs;

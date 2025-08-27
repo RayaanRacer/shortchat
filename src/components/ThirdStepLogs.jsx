@@ -36,6 +36,24 @@ const ThirdStepLogs = ({ width }) => {
     setLoading(true);
     fetchThirdStepLogs()
       .then((res) => {
+        const groupedByParentDate = res?.data?.groupedOTPLogs.reduce(
+          (acc, parent) => {
+            const dateOnly = parent.createdAt.split(" ")[0]; // Extract just the date
+
+            // Find or create the group
+            let group = acc.find((g) => g.date === dateOnly);
+            if (!group) {
+              group = { date: dateOnly, logs: [] };
+              acc.push(group);
+            }
+
+            group.logs.push(parent);
+            return acc;
+          },
+          []
+        );
+        // console.log(groupedByParentDate);
+        res.data.groupedOTPLogs = groupedByParentDate;
         setLogs(res?.data);
       })
       .catch((err) => {
@@ -44,31 +62,6 @@ const ThirdStepLogs = ({ width }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      console.log("reached");
-
-      try {
-        const response = await axios.get(
-          "http://shortchat.app/apis/user_list.php"
-        );
-        if (response.data.status === "success") {
-          setUsers(response.data.users);
-        } else {
-          setError("No users found");
-        }
-      } catch (err) {
-        console.log(err);
-
-        setError("Error fetching users");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
   }, []);
 
   const onHandleAnyTime = (e) => {
@@ -545,22 +538,41 @@ const ThirdStepLogs = ({ width }) => {
                 </tr>
               </thead>
               <tbody>
-                {logs?.groupedOTPLogs?.map((user, index) => (
-                  <React.Fragment key={user.id}>
-                    {/* Parent Row */}
-                    <tr>
-                      <th className="text-center">{index + 1}</th>
-                      <td className="text-center">
-                        {user.createdAt?.split(" ")[0]}
-                      </td>
-                      <td className="text-center">
-                        {user.createdAt?.split(" ")[1]}
-                      </td>
-                      <td className="text-center">{user.phoneCode}</td>
-                      <td className="text-center">{user.phoneNumber}</td>
-                    </tr>
-                  </React.Fragment>
-                ))}
+                {logs?.groupedOTPLogs?.map((users, index) => {
+                  const [year, month, day] = users.date.split("-");
+                  const formattedDate = `${day}-${month}-${year}`;
+                  return (
+                    <React.Fragment key={users.id}>
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="text-light bg-secondary text-center"
+                        >
+                          {formattedDate}
+                        </td>
+                      </tr>
+                      {users?.logs?.map((user, index) => {
+                        const [year, month, day] = user?.createdAt
+                          ?.split(" ")[0]
+                          ?.split("-");
+                        const formattedDate = `${day}-${month}-${year}`;
+                        return (
+                          <tr>
+                            <th className="text-center">{index + 1}</th>
+                            <td className="text-center">{formattedDate}</td>
+                            <td className="text-center">
+                              {user?.createdAt?.split(" ")[1]}
+                            </td>
+                            <td className="text-center">{user?.phoneCode}</td>
+                            <td className="text-center">{user?.phoneNumber}</td>
+                          </tr>
+                        );
+                      })}
+
+                      {/* Parent Row */}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>

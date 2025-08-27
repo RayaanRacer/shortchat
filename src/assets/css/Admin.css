@@ -298,3 +298,7 @@ body {
     opacity: 1;
     visibility: visible;
 }
+
+.disabled {
+    cursor: no-drop;
+}
