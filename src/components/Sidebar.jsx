@@ -10,6 +10,7 @@ import { SiPronounsdotpage } from "react-icons/si";
 import { PiNumberSquareThreeBold, PiNumberSquareTwoBold } from "react-icons/pi";
 import AuthAdmin from "../services/admin.services";
 import { MdOutlinePayments } from "react-icons/md";
+import { MdOutlineSupportAgent } from "react-icons/md";
 
 const Sidebar = ({ widthUpd }) => {
   const { logout } = AuthAdmin();
@@ -20,6 +21,8 @@ const Sidebar = ({ widthUpd }) => {
       ? "attempts"
       : location.pathname == "/admin/all-users"
       ? "users"
+      : location.pathname == "/admin/support-requests"
+      ? "support"
       : ""
   );
 
@@ -54,7 +57,12 @@ const Sidebar = ({ widthUpd }) => {
             </span>
           </li>
 
-          <li className="">
+          <li className={current == "form-usage" ? "hovered" : ""}
+          onClick={() => {
+              setCurrent("form-usage");
+              navigate("/admin/form-usage");
+            }}
+          >
             <a href="#" className="d-flex align-items-center flex-row ps-3">
               <IoLink size={27} className="me-2 icon-color" />
               <span className="title">Form Usage</span>
@@ -103,6 +111,18 @@ const Sidebar = ({ widthUpd }) => {
             <a href="#" className="d-flex align-items-center flex-row ps-3">
               <MdOutlinePayments size={24} className="me-2 icon-color" />
               <span className="title">All Transactions</span>
+            </a>
+          </li>
+          <li
+            className={current == "support" ? "hovered" : ""}
+            onClick={() => {
+              setCurrent("support");
+              navigate("/admin/support-requests");
+            }}
+          >
+            <a href="#" className="d-flex align-items-center flex-row ps-3">
+              <MdOutlineSupportAgent size={24} className="me-2 icon-color" />
+              <span className="title">Support Requests</span>
             </a>
           </li>
           <li className="" onClick={logout}>

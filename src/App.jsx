@@ -9,6 +9,8 @@ import Sidebar from "./components/Sidebar";
 import ThirdStepLogs from "./components/ThirdStepLogs";
 import AllUsers from "./components/AllUsers";
 import AllTransactions from "./components/AllTransactions";
+import AllFormUsage from "./components/AllFormUsage";
+import SupportRequests from "./components/SupportRequests";
 
 function App() {
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -120,6 +122,35 @@ function App() {
                 />
               }
             />
+
+            <Route
+              path="/admin/form-usage"
+              element={
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <AllFormUsage width={tableWidth} />
+                    </>
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/admin/support-requests"
+              element={
+                <PrivateRoute
+                  element={
+                    <>
+                      <Sidebar widthUpd={setSidebarWidth} />
+                      <SupportRequests width={tableWidth} />
+                    </>
+                  }
+                />
+              }
+            />
+
           </Routes>
         </React.Fragment>
       </BrowserRouter>

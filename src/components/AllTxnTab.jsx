@@ -10,9 +10,10 @@ import axios from "axios";
 import { FaArrowAltCircleDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { TbTrash } from "react-icons/tb";
-import { MdCreditCard, MdDeleteForever } from "react-icons/md";
-import { Dropdown } from "react-bootstrap";
+import { MdCreditCard, MdDeleteForever, MdNotes } from "react-icons/md";
+import { Dropdown, Modal, ModalBody } from "react-bootstrap";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import NotesManager from "./NotesManager";
 // import axios from "axios";
 
 const AllTxnTab = ({ width }) => {
@@ -23,6 +24,10 @@ const AllTxnTab = ({ width }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedRows, setExpandedRows] = useState({});
+  const [show, setShow] = useState(false);
+  const [id, setId] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
 
   const toggleRow = (p_index, index) => {
     setExpandedRows((prev) => ({
@@ -117,6 +122,21 @@ const AllTxnTab = ({ width }) => {
         toast.error(err?.response?.data?.message);
       })
       .finally(() => {});
+  };
+
+  const onShowModal = (id, data, isReject = false) => {
+    setIsRejectOpen(isReject);
+    setShow(true);
+    setNotes(data);
+    setId(id);
+  };
+
+  const onClose = () => {
+    setShow(false);
+    setIsRejectOpen(false);
+    refreshAllTxn();
+    setNotes([]);
+    setId(null);
   };
 
   return (
@@ -282,14 +302,44 @@ const AllTxnTab = ({ width }) => {
 
                                     <Dropdown.Item
                                       onClick={() =>
-                                        child.refund === "NO"
+                                        child.refund != "PENDING"
                                           ? onRefundTxn(child.id)
                                           : null
                                       }
-                                      disabled={child.refund !== "NO"}
+                                      disabled={
+                                        child.refund == "APPROVED" ||
+                                        child.refund == "PENDING"
+                                      }
                                       className="d-flex align-items-center"
                                     >
-                                      <MdCreditCard className="me-2" /> Refund
+                                      <MdCreditCard className="me-2" /> Refund -{" "}
+                                      {child.refund != "NO" ? child.refund : ""}
+                                    </Dropdown.Item>
+
+                                    <Dropdown.Item
+                                      onClick={() => {
+                                        onShowModal(
+                                          child.id,
+                                          child.allOrderNotes
+                                        );
+                                      }}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdNotes className="me-2" /> Notes
+                                    </Dropdown.Item>
+
+                                    <Dropdown.Item
+                                      onClick={() => {
+                                        onShowModal(
+                                          child.id,
+                                          child.rejected_notes,
+                                          true
+                                        );
+                                      }}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdNotes className="me-2" /> Rejected
+                                      Notes
                                     </Dropdown.Item>
                                   </Dropdown.Menu>
                                 </Dropdown>
@@ -305,6 +355,18 @@ const AllTxnTab = ({ width }) => {
           </div>
         </div>
       </div>
+
+      <Modal show={show} onHide={onClose}>
+        <ModalBody>
+          <NotesManager
+            onClose={onClose}
+            paymentId={id}
+            data={notes}
+            type="ALL"
+            isRejectOpen={isRejectOpen}
+          />
+        </ModalBody>
+      </Modal>
     </>
   );
 };

@@ -13,8 +13,15 @@ import axios from "axios";
 import { FaArrowAltCircleDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { TbTrash } from "react-icons/tb";
-import { MdCancel, MdCheck } from "react-icons/md";
+import { MdCancel, MdCheck, MdNotes } from "react-icons/md";
+import { Dropdown, Modal, ModalBody } from "react-bootstrap";
+import NotesManager from "./NotesManager";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 // import axios from "axios";
+
+const MySwal = withReactContent(Swal);
 
 const AllRefundTab = ({ width }) => {
   const [users, setUsers] = useState([]);
@@ -24,6 +31,38 @@ const AllRefundTab = ({ width }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedRows, setExpandedRows] = useState({});
+  const [show, setShow] = useState(false);
+  const [id, setId] = useState(null);
+  const [notes, setNotes] = useState([]);
+  const [isRejectOpen, setIsRejectOpen] = useState(false);
+
+  const handleSubmitRemark = async () => {
+    const { value: remark } = await MySwal.fire({
+      title: "Submit Remark",
+      input: "textarea",
+      inputLabel: "Your Remark",
+      inputPlaceholder: "Type your remark here...",
+      inputAttributes: {
+        "aria-label": "Type your remark here",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+    });
+
+    if (remark) {
+      // Example: sending remark to API
+      // await fetch("/api/remarks", { method: "POST", body: JSON.stringify({ remark }) });
+
+      MySwal.fire({
+        icon: "success",
+        title: "Submitted!",
+        text: `Your remark: ${remark}`,
+      });
+
+      console.log("Submitted Remark:", remark);
+    }
+  };
 
   const toggleRow = (p_index, index) => {
     setExpandedRows((prev) => ({
@@ -75,18 +114,59 @@ const AllRefundTab = ({ width }) => {
       .finally(() => {});
   };
 
-  const onDeclineRefundTxn = (id) => {
-    const data = { paymentId: id };
-    DeclineRefundTransactionService(data)
-      .then((res) => {
-        toast.success(res?.message);
-        onRefreshTxn();
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message);
-      })
-      .finally(() => {});
+  const onDeclineRefundTxn = async (id) => {
+    const { value: remark } = await MySwal.fire({
+      title: "Submit Remark",
+      input: "textarea",
+      inputLabel: "Your Remark",
+      inputPlaceholder: "Type your remark here...",
+      inputAttributes: {
+        "aria-label": "Type your remark here",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+    });
+
+    if (remark) {
+      const data = { paymentId: id, remark };
+      DeclineRefundTransactionService(data)
+        .then((res) => {
+          // toast.success(res?.message);
+          onRefreshTxn();
+          MySwal.fire({
+            icon: "success",
+            title: "Submitted!",
+            text: res?.message,
+          });
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message);
+        })
+        .finally(() => {});
+    } else {
+      MySwal.fire({
+        icon: "error",
+        title: "Cancelled Rejection !",
+      });
+    }
   };
+
+  const onShowModal = (id, data, isReject = false) => {
+    setIsRejectOpen(isReject);
+    setShow(true);
+    setNotes(data);
+    setId(id);
+  };
+
+  const onClose = () => {
+    setIsRejectOpen(false);
+    setShow(false);
+    onRefreshTxn();
+    setNotes([]);
+    setId(null);
+  };
+
   return (
     <>
       <div className="details" style={{ width: width, float: "right" }}>
@@ -177,7 +257,7 @@ const AllRefundTab = ({ width }) => {
                               </td>
                               <td className="text-center">{child.brId}</td>
                               <td className="text-center">{child.refund}</td>
-                              <td className="text-center clickable-btn">
+                              {/* <td className="text-center clickable-btn">
                                 <MdCheck
                                   size={20}
                                   className="me-2"
@@ -188,7 +268,71 @@ const AllRefundTab = ({ width }) => {
                                   size={20}
                                   title="Reject"
                                   onClick={() => onDeclineRefundTxn(child.id)}
-                                />
+                                /> */}
+
+                              <td
+                                className="text-center"
+                                style={{ height: "100%" }}
+                              >
+                                <Dropdown align="end">
+                                  <Dropdown.Toggle
+                                    as="span"
+                                    className="btn p-0 border-0 bg-transparent"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <BsThreeDotsVertical size={20} />
+                                  </Dropdown.Toggle>
+
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item
+                                      onClick={() =>
+                                        onApproveRefundTxn(child.id)
+                                      }
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdCheck
+                                        size={20}
+                                        className="me-2"
+                                        title="Approve"
+                                      />
+                                      Approve
+                                    </Dropdown.Item>
+
+                                    <Dropdown.Item
+                                      onClick={() =>
+                                        onDeclineRefundTxn(child.id)
+                                      }
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdCancel className="me-2" /> Reject
+                                    </Dropdown.Item>
+
+                                    <Dropdown.Item
+                                      onClick={() => {
+                                        onShowModal(
+                                          child.id,
+                                          child.refundOrderNotes
+                                        );
+                                      }}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdNotes className="me-2" /> Notes
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                      onClick={() => {
+                                        onShowModal(
+                                          child.id,
+                                          child.rejected_notes,
+                                          true
+                                        );
+                                      }}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <MdNotes className="me-2" /> Rejected
+                                      Notes
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
                               </td>
                             </tr>
                           );
@@ -201,6 +345,18 @@ const AllRefundTab = ({ width }) => {
           </div>
         </div>
       </div>
+
+      <Modal show={show} onHide={onClose}>
+        <ModalBody>
+          <NotesManager
+            onClose={onClose}
+            paymentId={id}
+            data={notes}
+            type="REFUND"
+            isRejectOpen={isRejectOpen}
+          />
+        </ModalBody>
+      </Modal>
     </>
   );
 };

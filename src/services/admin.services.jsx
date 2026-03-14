@@ -175,6 +175,37 @@ export const AllTransactionListService = async (filters) => {
   return response.data;
 };
 
+export const AllSupportRequestListService = async (filters) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.get(
+    "https://shortchat.app/apis/dashboard/admin/support_request.php",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: filters,
+    }
+  );
+  return response.data;
+};
+
+
+export const DeleteSupportRequestByIdService = async (id) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.delete(
+    `https://shortchat.app/apis/dashboard/admin/delete_support_request.php?requestId=${id}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+  return response.data;
+};
+
+
 export const AllSuccessListService = async (filters) => {
   const token = Cookies.get("admin-token");
   const response = await axios.get(
@@ -317,3 +348,19 @@ export const DeclineRefundTransactionService = async (data) => {
   );
   return response.data;
 };
+
+export const AddNotesService = async (data) => {
+  const token = Cookies.get("admin-token");
+  const response = await axios.post(
+    `https://shortchat.app/apis/dashboard/admin/add_order_note.php`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
